@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+<h1>ログイン</h1>
+<% if (errors.length) { %>
+  <ul class="errors"><% for (const e of errors) { %><li><%= e %></li><% } %></ul>
+<% } %>
+<form method="post" action="/login" class="form">
+  <label>ログインID <input type="text" name="username" value="<%= username %>" autocomplete="username" autofocus></label>
+  <label>パスワード <input type="password" name="password" autocomplete="current-password"></label>
+  <div class="form-actions"><button type="submit" class="primary">ログイン</button></div>
+</form>
+<%- include('partials/footer') %>
