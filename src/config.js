@@ -29,4 +29,20 @@ module.exports = {
 
   // 一覧の並び順  'newest' = 新しい順 / 'name' = 名前順
   ITEM_SORT: 'name',
+
+  // ---------- ログイン関連（auth-lab から追加） ----------
+  // セッションIDの署名に使う秘密（.env の SESSION_SECRET）
+  SESSION_SECRET: process.env.SESSION_SECRET || 'change-me-session-secret',
+  // ログインしたままでいられる時間（ミリ秒）
+  SESSION_MAX_AGE_MS: 30 * 60 * 1000,
+  // パスワードを何回間違えたらロックするか / ロック時間（分）
+  LOGIN_MAX_FAILS: 5,
+  LOCK_MINUTES: 10,
+  // パスワードの最小文字数
+  PASSWORD_MIN: 8,
+  // 役割（DBに入る値 → 画面の表示）
+  ROLE_LABELS: {
+    admin: '総務（管理者）',
+    staff: '一般社員',
+  },
 };
