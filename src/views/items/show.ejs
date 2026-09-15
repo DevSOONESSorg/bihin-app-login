@@ -18,6 +18,7 @@
   <dt>登録日時</dt><dd><%= item.created_at %></dd>
 </dl>
 
+<% if (currentUser.role === 'admin') { %>
 <div class="actions-row">
   <% if (item.status === 'available') { %>
     <a class="button primary" href="/loans/new/<%= item.id %>">貸し出す</a>
@@ -31,6 +32,7 @@
     <button type="submit" class="danger">削除</button>
   </form>
 </div>
+<% } %>
 
 <h2>貸出履歴</h2>
 <% if (history.length === 0) { %>

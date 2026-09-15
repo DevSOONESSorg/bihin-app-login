@@ -26,9 +26,11 @@
           <% if (loan.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
         </td>
         <td class="actions">
+          <% if (currentUser.role === 'admin') { %>
           <form method="post" action="/loans/<%= loan.id %>/return">
             <button type="submit" class="small">返却</button>
           </form>
+          <% } %>
         </td>
       </tr>
     <% } %>

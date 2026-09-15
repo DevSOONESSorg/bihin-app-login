@@ -48,7 +48,9 @@
           <% if (item.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
         </td>
         <td class="actions">
-          <% if (item.status === 'available') { %>
+          <% if (currentUser.role !== 'admin') { %>
+            <%# 一般社員には操作ボタンを出さない（本体のチェックは routes 側） %>
+          <% } else if (item.status === 'available') { %>
             <a class="button small" href="/loans/new/<%= item.id %>">貸出</a>
           <% } else if (item.status === 'lent') { %>
             <form method="post" action="/loans/<%= item.loan_id %>/return">
