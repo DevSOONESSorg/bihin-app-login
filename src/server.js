@@ -5,7 +5,9 @@
 
 const path = require('path');
 const express = require('express');
+const session = require('express-session');   // ← 追加
 const config = require('./config');
+const { requireLogin } = require('./auth/middleware'); // ← 追加
 
 const app = express();
 
@@ -19,15 +21,36 @@ app.use(express.urlencoded({ extended: false }));
 // public フォルダ（CSSなど）をそのまま配信する
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// ---------- セッション（ログイン状態の保持）← 追加 ----------
+// ブラウザには sid という Cookie（ランダムなセッションID）だけを渡す。
+// 中身（誰がログイン中か）はサーバー側にある。
+app.use(
+  session({
+    name: 'sid',
+    secret: config.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,   // JavaScript から読めない（XSS対策）
+      sameSite: 'lax',  // 他サイトからのフォーム送信に付けない（CSRF対策の基本）
+      secure: false,    // https の本番では true
+      maxAge: config.SESSION_MAX_AGE_MS,
+    },
+  })
+);
+
 // どの画面でも使う共通の値
 app.use((req, res, next) => {
   res.locals.appName = config.APP_NAME;
   res.locals.statusLabels = config.STATUS_LABELS;
+  res.locals.roleLabels = config.ROLE_LABELS;          // ← 追加
+  res.locals.currentUser = req.session.user || null;   // ← 追加（未ログインなら null）
   res.locals.msg = req.query.msg || ''; // 「登録しました」などのメッセージ
   next();
 });
 
 // ---------- 画面ごとの処理（ルーティング） ----------
+app.use('/', require('./auth/routes'));               // ← 追加: /login /logout /password
 app.get('/', (req, res) => res.redirect('/items'));
 app.use('/items', require('./routes/items'));
 app.use('/loans', require('./routes/loans'));

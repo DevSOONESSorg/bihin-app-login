@@ -13,3 +13,4 @@ services:
       - TZ=Asia/Tokyo
       - APP_NAME=${APP_NAME:-備品貸出管理}
       - HOST_PORT=${PORT:-3000}
+      - SESSION_SECRET=${SESSION_SECRET:-change-me-session-secret}
