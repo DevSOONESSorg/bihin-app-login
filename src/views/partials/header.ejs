@@ -15,6 +15,7 @@
       <a href="/loans?overdue=1">延滞</a>
       <% if (currentUser && currentUser.role === 'admin') { %>
         <a class="button" href="/items/new">＋ 備品を登録</a>
+        <a href="/admin/users">ユーザー管理</a>
       <% } %>
       <% if (currentUser) { %>
         <span class="me"><%= currentUser.display_name %>（<%= roleLabels[currentUser.role] %>）</span>

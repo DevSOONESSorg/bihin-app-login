@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<h1><%= title %></h1>
+<div class="issued">
+  <p>次の情報を本人に伝えてください。<strong>この画面を閉じると仮パスワードは二度と表示できません</strong>（DBにはハッシュしか残らないため）。</p>
+  <dl class="detail">
+    <dt>氏名</dt><dd><%= display_name %></dd>
+    <dt>ログインID</dt><dd><code><%= username %></code></dd>
+    <dt>仮パスワード</dt><dd><code class="temp"><%= temp %></code></dd>
+    <dt>本人への案内</dt><dd>初回ログイン後、パスワード変更画面が自動で開きます。8文字以上の新しいパスワードを設定してください。</dd>
+  </dl>
+</div>
+<p><a class="button" href="/admin/users">ユーザー管理へ戻る</a></p>
+<%- include('../partials/footer') %>

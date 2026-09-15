@@ -1,0 +1,34 @@
+<%- include('../partials/header') %>
+<h1>ユーザー管理</h1>
+<p><a class="button primary" href="/admin/users/new">＋ アカウントを発行</a></p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>ログインID</th><th>表示名</th><th>役割</th><th>状態</th><th>最終ログイン</th><th></th></tr></thead>
+  <tbody>
+    <% for (const u of list) { %>
+      <tr class="<%= u.is_active ? '' : 'row-inactive' %>">
+        <td><code><%= u.username %></code></td>
+        <td><%= u.display_name %></td>
+        <td><%= roleLabels[u.role] %></td>
+        <td>
+          <% if (!u.is_active) { %><span class="badge badge-off">無効</span>
+          <% } else if (u.locked_until && new Date(u.locked_until) > new Date()) { %><span class="badge badge-lock">ロック中</span>
+          <% } else if (u.must_change_password) { %><span class="badge badge-temp">初期PW</span>
+          <% } else { %><span class="badge badge-on">有効</span><% } %>
+        </td>
+        <td><%= u.last_login_at || '—' %></td>
+        <td class="actions">
+          <a class="button small" href="/admin/users/<%= u.id %>/edit">編集</a>
+          <form method="post" action="/admin/users/<%= u.id %>/reset-password" onsubmit="return confirm('仮パスワードを発行して置き換えます。よろしいですか？');"><button class="small">PWリセット</button></form>
+          <% if (u.is_active) { %>
+            <form method="post" action="/admin/users/<%= u.id %>/deactivate" onsubmit="return confirm('無効化しますか？（ログインできなくなります）');"><button class="small danger">無効化</button></form>
+          <% } else { %>
+            <form method="post" action="/admin/users/<%= u.id %>/activate"><button class="small">有効化</button></form>
+          <% } %>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../partials/footer') %>

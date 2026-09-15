@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<h1>監査ログ（最新200件）</h1>
+<p class="lead">「誰が・いつ・何をしたか」。情シスは問い合わせや事故のときに必ずここを見ます。</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>日時</th><th>操作した人</th><th>操作</th><th>対象</th><th>詳細</th></tr></thead>
+  <tbody>
+    <% for (const l of logs) { %>
+      <tr class="<%= l.action === 'login_failed' ? 'row-warn' : '' %>">
+        <td><%= l.created_at %></td><td><%= l.actor %></td><td><code><%= l.action %></code></td><td><%= l.target || '' %></td><td><%= l.detail || '' %></td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../partials/footer') %>

@@ -54,6 +54,7 @@ app.use('/', require('./auth/routes'));               // ← 追加: /login /log
 app.get('/', requireLogin, (req, res) => res.redirect('/items'));
 app.use('/items', require('./routes/items'));
 app.use('/loans', require('./routes/loans'));
+app.use('/admin/users', require('./routes/admin-users')); // ← 追加: ユーザー管理（admin のみ）
 
 // 該当する画面がないとき
 app.use((req, res) => {

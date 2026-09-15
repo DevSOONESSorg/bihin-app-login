@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+<h1><%= title %></h1>
+<% if (errors.length) { %>
+  <ul class="errors"><% for (const e of errors) { %><li><%= e %></li><% } %></ul>
+<% } %>
+<form method="post" action="<%= action %>" class="form">
+  <label>ログインID <span class="required">必須</span>
+    <% if (isNew) { %>
+      <input type="text" name="username" value="<%= user.username %>" placeholder="例：arakaki（半角英数小文字 3〜20文字）">
+    <% } else { %>
+      <input type="text" value="<%= user.username %>" disabled>
+    <% } %>
+  </label>
+  <label>表示名 <span class="required">必須</span>
+    <input type="text" name="display_name" value="<%= user.display_name %>" placeholder="例：新垣">
+  </label>
+  <label>役割
+    <select name="role">
+      <% for (const [v, l] of Object.entries(roleLabels)) { %>
+        <option value="<%= v %>" <%= user.role === v ? 'selected' : '' %>><%= l %></option>
+      <% } %>
+    </select>
+  </label>
+  <div class="form-actions">
+    <button type="submit" class="primary"><%= isNew ? '発行する' : '保存' %></button>
+    <a href="/admin/users">キャンセル</a>
+  </div>
+</form>
+<% if (isNew) { %>
+<p class="hint">発行すると仮パスワードが1回だけ表示されます。本人に安全な方法で伝え、初回ログイン時に本人が変更します。</p>
+<% } %>
+<%- include('../partials/footer') %>
