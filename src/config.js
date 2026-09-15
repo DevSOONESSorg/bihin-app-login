@@ -45,4 +45,11 @@ module.exports = {
     admin: '総務（管理者）',
     staff: '一般社員',
   },
+
+  // ---------- 社員マスタAPI（auth-lab の api）----------
+  API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3001',
+  API_AUTH_MODE: process.env.API_AUTH_MODE || 'none', // none / apikey / jwt
+  API_KEY: process.env.API_KEY || '',
+  API_CLIENT_ID: process.env.API_CLIENT_ID || '',
+  API_CLIENT_SECRET: process.env.API_CLIENT_SECRET || '',
 };

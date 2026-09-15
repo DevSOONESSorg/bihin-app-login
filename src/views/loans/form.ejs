@@ -11,7 +11,19 @@
 <form method="post" action="/loans/new/<%= item.id %>" class="form">
   <label>
     借りる人 <span class="required">必須</span>
-    <input type="text" name="borrower" value="<%= loan.borrower %>" placeholder="例：比嘉">
+    <% if (employees.length > 0) { %>
+      <%# 社員マスタAPIから取った一覧から選ぶ %>
+      <select name="borrower">
+        <option value="">選んでください</option>
+        <% for (const e of employees) { %>
+          <option value="<%= e.name %>" <%= loan.borrower === e.name ? 'selected' : '' %>><%= e.name %>（<%= e.department %>）</option>
+        <% } %>
+      </select>
+    <% } else { %>
+      <%# APIが使えないときは手入力にフォールバック %>
+      <input type="text" name="borrower" value="<%= loan.borrower %>" placeholder="例：比嘉">
+      <% if (apiError) { %><small class="muted">社員マスタAPIに接続できないため手入力です（<%= apiError %>）</small><% } %>
+    <% } %>
   </label>
   <label>
     貸出日

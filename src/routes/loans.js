@@ -9,6 +9,7 @@ const db = require('../db');
 const config = require('../config');
 const dates = require('../dates');
 const { requireLogin, requireRole } = require('../auth/middleware'); // ← 追加
+const employeeApi = require('../lib/employeeApi'); // ← 追加: 社員マスタAPI
 
 const router = express.Router();
 
@@ -42,7 +43,16 @@ router.get('/', requireLogin, (req, res) => {
 });
 
 // ---------- 貸出登録 ----------
-router.get('/new/:itemId', adminOnly, (req, res) => {
+// 社員マスタAPIから社員一覧を取る。APIが落ちていても貸出はできるように、失敗したら空配列
+async function fetchEmployees() {
+  try {
+    return { employees: await employeeApi.listEmployees(), apiError: null };
+  } catch (e) {
+    return { employees: [], apiError: e.message };
+  }
+}
+
+router.get('/new/:itemId', adminOnly, async (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.itemId);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   if (item.status !== 'available') {
@@ -54,10 +64,11 @@ router.get('/new/:itemId', adminOnly, (req, res) => {
     item,
     loan: { borrower: '', lent_on: today, due_on: dates.addDays(today, config.DEFAULT_LOAN_DAYS) },
     errors: [],
+    ...(await fetchEmployees()),
   });
 });
 
-router.post('/new/:itemId', adminOnly, (req, res) => {
+router.post('/new/:itemId', adminOnly, async (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.itemId);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
 
@@ -80,6 +91,7 @@ router.post('/new/:itemId', adminOnly, (req, res) => {
       item,
       loan: { borrower, lent_on: lentOn, due_on: dueOn },
       errors,
+      ...(await fetchEmployees()),
     });
   }
 
