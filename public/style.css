@@ -137,3 +137,8 @@ button.small, .button.small { padding: 4px 10px; font-size: 13px; }
   .detail { grid-template-columns: 1fr; gap: 2px 0; }
   .detail dt { margin-top: 8px; }
 }
+
+/* ---- ログイン関連（auth-lab から追加） ---- */
+.site-header .me { color: #fff; opacity: .85; font-size: 13px; }
+.site-header nav form { display: inline; }
+code { background: #f0f2f4; padding: 1px 5px; border-radius: 3px; font-size: 90%; }
