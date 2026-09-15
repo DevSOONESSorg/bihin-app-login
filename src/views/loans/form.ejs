@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<h1>貸出登録</h1>
+<p class="lead">「<%= item.name %>」を貸し出します。</p>
+
+<% if (errors.length) { %>
+  <ul class="errors">
+    <% for (const e of errors) { %><li><%= e %></li><% } %>
+  </ul>
+<% } %>
+
+<form method="post" action="/loans/new/<%= item.id %>" class="form">
+  <label>
+    借りる人 <span class="required">必須</span>
+    <input type="text" name="borrower" value="<%= loan.borrower %>" placeholder="例：比嘉">
+  </label>
+  <label>
+    貸出日
+    <input type="date" name="lent_on" value="<%= loan.lent_on %>">
+  </label>
+  <label>
+    返却期限
+    <input type="date" name="due_on" value="<%= loan.due_on %>">
+  </label>
+  <div class="form-actions">
+    <button type="submit" class="primary">貸し出す</button>
+    <a href="/items/<%= item.id %>">キャンセル</a>
+  </div>
+</form>
+<%- include('../partials/footer') %>

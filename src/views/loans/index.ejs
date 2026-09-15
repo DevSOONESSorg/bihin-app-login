@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+<h1><%= title %></h1>
+
+<p class="tabs">
+  <a href="/loans" class="<%= onlyOverdue ? '' : 'active' %>">貸出中すべて</a>
+  <a href="/loans?overdue=1" class="<%= onlyOverdue ? 'active' : '' %>">延滞のみ</a>
+</p>
+
+<% if (loans.length === 0) { %>
+  <p class="empty"><%= onlyOverdue ? '延滞している備品はありません。' : '貸出中の備品はありません。' %></p>
+<% } else { %>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>備品名</th><th>分類</th><th>借りている人</th><th>貸出日</th><th>返却期限</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% for (const loan of loans) { %>
+      <tr class="<%= loan.overdue ? 'row-overdue' : '' %>">
+        <td><a href="/items/<%= loan.item_id %>"><%= loan.item_name %></a></td>
+        <td><%= loan.category %></td>
+        <td><%= loan.borrower %></td>
+        <td><%= loan.lent_on %></td>
+        <td>
+          <%= loan.due_on %>
+          <% if (loan.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
+        </td>
+        <td class="actions">
+          <form method="post" action="/loans/<%= loan.id %>/return">
+            <button type="submit" class="small">返却</button>
+          </form>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<% } %>
+<%- include('../partials/footer') %>

@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+<h1><%= title %></h1>
+
+<% if (errors.length) { %>
+  <ul class="errors">
+    <% for (const e of errors) { %><li><%= e %></li><% } %>
+  </ul>
+<% } %>
+
+<form method="post" action="<%= action %>" class="form">
+  <label>
+    備品名 <span class="required">必須</span>
+    <input type="text" name="name" value="<%= item.name %>" placeholder="例：ノートPC A-04">
+  </label>
+
+  <label>
+    分類
+    <select name="category">
+      <% for (const c of categories) { %>
+        <option value="<%= c %>" <%= item.category === c ? 'selected' : '' %>><%= c %></option>
+      <% } %>
+    </select>
+  </label>
+
+  <label>
+    保管場所
+    <input type="text" name="location" value="<%= item.location %>" placeholder="例：2階 総務ロッカー">
+  </label>
+
+  <label>
+    ステータス
+    <select name="status">
+      <% for (const [value, label] of Object.entries(statusLabels)) { %>
+        <option value="<%= value %>" <%= item.status === value ? 'selected' : '' %>><%= label %></option>
+      <% } %>
+    </select>
+  </label>
+
+  <label>
+    メモ
+    <textarea name="note" rows="3"><%= item.note %></textarea>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="primary">保存</button>
+    <a href="<%= item.id ? '/items/' + item.id : '/items' %>">キャンセル</a>
+  </div>
+</form>
+<%- include('../partials/footer') %>

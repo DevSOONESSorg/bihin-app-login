@@ -1,0 +1,15 @@
+# 起動:  docker compose up
+# 停止:  Ctrl+C のあと docker compose down
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"        # 左がPC側のポート（.envで変更できる）
+    volumes:
+      - ./src:/app/src              # コードを直すとすぐ反映される
+      - ./public:/app/public
+      - ./data:/app/data            # DBファイルはPC側の data/ に保存される
+    environment:
+      - TZ=Asia/Tokyo
+      - APP_NAME=${APP_NAME:-備品貸出管理}
+      - HOST_PORT=${PORT:-3000}

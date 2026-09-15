@@ -1,0 +1,17 @@
+{
+  "name": "bihin-app",
+  "version": "1.0.0",
+  "description": "社内備品 貸出管理システム（SE仕事体験コース 完成版）",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "reset": "node src/reset.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}

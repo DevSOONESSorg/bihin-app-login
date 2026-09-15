@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> | <%= appName %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/items"><%= appName %></a>
+    <nav>
+      <a href="/items">備品一覧</a>
+      <a href="/loans">貸出中</a>
+      <a href="/loans?overdue=1">延滞</a>
+      <a class="button" href="/items/new">＋ 備品を登録</a>
+    </nav>
+  </header>
+  <main class="container">
+    <% if (msg) { %>
+      <div class="flash"><%= msg %></div>
+    <% } %>

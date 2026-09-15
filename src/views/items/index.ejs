@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+<h1>備品一覧</h1>
+
+<div class="summary">
+  <div class="stat"><span class="stat-num"><%= counts.total %></span>登録数</div>
+  <div class="stat"><span class="stat-num"><%= counts.lent %></span>貸出中</div>
+  <div class="stat <%= counts.overdue > 0 ? 'stat-danger' : '' %>"><span class="stat-num"><%= counts.overdue %></span>延滞</div>
+</div>
+
+<form class="search" method="get" action="/items">
+  <input type="text" name="q" value="<%= q %>" placeholder="備品名で検索">
+  <select name="status">
+    <option value="">すべてのステータス</option>
+    <% for (const [value, label] of Object.entries(statusLabels)) { %>
+      <option value="<%= value %>" <%= status === value ? 'selected' : '' %>><%= label %></option>
+    <% } %>
+  </select>
+  <button type="submit">検索</button>
+  <% if (q || status) { %><a href="/items">クリア</a><% } %>
+</form>
+
+<% if (items.length === 0) { %>
+  <p class="empty">該当する備品はありません。</p>
+<% } else { %>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>備品名</th>
+      <th>分類</th>
+      <th>保管場所</th>
+      <th>ステータス</th>
+      <th>借りている人</th>
+      <th>返却期限</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (const item of items) { %>
+      <tr class="<%= item.overdue ? 'row-overdue' : '' %>">
+        <td><a href="/items/<%= item.id %>"><%= item.name %></a></td>
+        <td><%= item.category %></td>
+        <td><%= item.location %></td>
+        <td><span class="badge badge-<%= item.status %>"><%= statusLabels[item.status] %></span></td>
+        <td><%= item.borrower || '' %></td>
+        <td>
+          <%= item.due_on || '' %>
+          <% if (item.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
+        </td>
+        <td class="actions">
+          <% if (item.status === 'available') { %>
+            <a class="button small" href="/loans/new/<%= item.id %>">貸出</a>
+          <% } else if (item.status === 'lent') { %>
+            <form method="post" action="/loans/<%= item.loan_id %>/return">
+              <button type="submit" class="small">返却</button>
+            </form>
+          <% } %>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<% } %>
+<%- include('../partials/footer') %>

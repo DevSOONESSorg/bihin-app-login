@@ -1,0 +1,66 @@
+<%- include('../partials/header') %>
+<h1><%= item.name %></h1>
+
+<dl class="detail">
+  <dt>分類</dt><dd><%= item.category %></dd>
+  <dt>保管場所</dt><dd><%= item.location %></dd>
+  <dt>ステータス</dt><dd><span class="badge badge-<%= item.status %>"><%= statusLabels[item.status] %></span></dd>
+  <% if (item.status === 'lent') { %>
+    <dt>借りている人</dt><dd><%= item.borrower %></dd>
+    <dt>貸出日</dt><dd><%= item.lent_on %></dd>
+    <dt>返却期限</dt>
+    <dd>
+      <%= item.due_on %>
+      <% if (item.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
+    </dd>
+  <% } %>
+  <dt>メモ</dt><dd><%= item.note || '（なし）' %></dd>
+  <dt>登録日時</dt><dd><%= item.created_at %></dd>
+</dl>
+
+<div class="actions-row">
+  <% if (item.status === 'available') { %>
+    <a class="button primary" href="/loans/new/<%= item.id %>">貸し出す</a>
+  <% } else if (item.status === 'lent') { %>
+    <form method="post" action="/loans/<%= item.loan_id %>/return">
+      <button type="submit" class="primary">返却する</button>
+    </form>
+  <% } %>
+  <a class="button" href="/items/<%= item.id %>/edit">編集</a>
+  <form method="post" action="/items/<%= item.id %>/delete" onsubmit="return confirm('この備品を削除しますか？');">
+    <button type="submit" class="danger">削除</button>
+  </form>
+</div>
+
+<h2>貸出履歴</h2>
+<% if (history.length === 0) { %>
+  <p class="empty">まだ貸し出されたことがありません。</p>
+<% } else { %>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>借りた人</th><th>貸出日</th><th>返却期限</th><th>返却日</th></tr>
+  </thead>
+  <tbody>
+    <% for (const loan of history) { %>
+      <tr class="<%= loan.overdue ? 'row-overdue' : '' %>">
+        <td><%= loan.borrower %></td>
+        <td><%= loan.lent_on %></td>
+        <td><%= loan.due_on %></td>
+        <td>
+          <% if (loan.returned_on) { %>
+            <%= loan.returned_on %>
+          <% } else { %>
+            <span class="badge badge-lent">貸出中</span>
+            <% if (loan.overdue) { %><span class="badge badge-overdue">延滞</span><% } %>
+          <% } %>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<% } %>
+
+<p><a href="/items">← 備品一覧へ戻る</a></p>
+<%- include('../partials/footer') %>
