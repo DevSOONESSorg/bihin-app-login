@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 
 // ---------- 画面ごとの処理（ルーティング） ----------
 app.use('/', require('./auth/routes'));               // ← 追加: /login /logout /password
-app.get('/', (req, res) => res.redirect('/items'));
+app.get('/', requireLogin, (req, res) => res.redirect('/items'));
 app.use('/items', require('./routes/items'));
 app.use('/loans', require('./routes/loans'));
 

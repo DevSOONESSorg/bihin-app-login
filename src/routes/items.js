@@ -8,8 +8,12 @@ const express = require('express');
 const db = require('../db');
 const config = require('../config');
 const dates = require('../dates');
+const { requireLogin, requireRole } = require('../auth/middleware'); // ← 追加
 
 const router = express.Router();
+
+// 閲覧はログインしていれば誰でも / 変更する操作は admin（総務）だけ
+const adminOnly = requireRole('admin');
 
 // 備品1件を、貸出中の情報（借りた人・期限）つきで取り出す
 const SELECT_ITEM_WITH_LOAN = `
@@ -34,7 +38,7 @@ function validateItem(body) {
 
 // ---------- 一覧 ----------
 // /items?q=検索語&status=lent
-router.get('/', (req, res) => {
+router.get('/', requireLogin, (req, res) => {
   const q = (req.query.q || '').trim();
   const status = req.query.status || '';
 
@@ -73,7 +77,7 @@ router.get('/', (req, res) => {
 });
 
 // ---------- 登録 ----------
-router.get('/new', (req, res) => {
+router.get('/new', adminOnly, (req, res) => {
   res.render('items/form', {
     title: '備品を登録',
     item: { name: '', category: config.CATEGORIES[0], location: '', status: 'available', note: '' },
@@ -83,7 +87,7 @@ router.get('/new', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', adminOnly, (req, res) => {
   const errors = validateItem(req.body);
   if (errors.length) {
     return res.status(400).render('items/form', {
@@ -105,7 +109,7 @@ router.post('/', (req, res) => {
 });
 
 // ---------- 詳細（貸出履歴つき） ----------
-router.get('/:id', (req, res) => {
+router.get('/:id', requireLogin, (req, res) => {
   const item = db.prepare(SELECT_ITEM_WITH_LOAN + ' WHERE items.id = ?').get(req.params.id);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
 
@@ -118,7 +122,7 @@ router.get('/:id', (req, res) => {
 });
 
 // ---------- 編集 ----------
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', adminOnly, (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.id);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   res.render('items/form', {
@@ -130,7 +134,7 @@ router.get('/:id/edit', (req, res) => {
   });
 });
 
-router.post('/:id', (req, res) => {
+router.post('/:id', adminOnly, (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.id);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
 
@@ -160,7 +164,7 @@ router.post('/:id', (req, res) => {
 });
 
 // ---------- 削除 ----------
-router.post('/:id/delete', (req, res) => {
+router.post('/:id/delete', adminOnly, (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.id);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   if (item.status === 'lent') {

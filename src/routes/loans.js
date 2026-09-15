@@ -8,13 +8,16 @@ const express = require('express');
 const db = require('../db');
 const config = require('../config');
 const dates = require('../dates');
+const { requireLogin, requireRole } = require('../auth/middleware'); // ← 追加
 
 const router = express.Router();
+
+const adminOnly = requireRole('admin');
 
 // ---------- 貸出中一覧 ----------
 // /loans            → 貸出中すべて
 // /loans?overdue=1  → 返却期限を過ぎているものだけ
-router.get('/', (req, res) => {
+router.get('/', requireLogin, (req, res) => {
   const onlyOverdue = req.query.overdue === '1';
 
   let sql = `
@@ -39,7 +42,7 @@ router.get('/', (req, res) => {
 });
 
 // ---------- 貸出登録 ----------
-router.get('/new/:itemId', (req, res) => {
+router.get('/new/:itemId', adminOnly, (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.itemId);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
   if (item.status !== 'available') {
@@ -54,7 +57,7 @@ router.get('/new/:itemId', (req, res) => {
   });
 });
 
-router.post('/new/:itemId', (req, res) => {
+router.post('/new/:itemId', adminOnly, (req, res) => {
   const item = db.prepare('SELECT * FROM items WHERE id = ?').get(req.params.itemId);
   if (!item) return res.status(404).render('error', { title: '見つかりません', message: 'その備品はありません。' });
 
@@ -93,7 +96,7 @@ router.post('/new/:itemId', (req, res) => {
 });
 
 // ---------- 返却 ----------
-router.post('/:loanId/return', (req, res) => {
+router.post('/:loanId/return', adminOnly, (req, res) => {
   const loan = db.prepare('SELECT * FROM loans WHERE id = ?').get(req.params.loanId);
   if (!loan) return res.status(404).render('error', { title: '見つかりません', message: 'その貸出記録はありません。' });
   if (loan.returned_on) {
