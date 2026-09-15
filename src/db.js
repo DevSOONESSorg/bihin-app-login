@@ -40,6 +40,31 @@ db.exec(`
     returned_on TEXT,                         -- 返却日   (NULL = 貸出中)
     created_at  TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
+  -- ---------- ログイン用（auth-lab から追加） ----------
+  -- users     : ログインできる人。パスワードはハッシュで保存（auth/users.js）
+  -- audit_logs: 誰が・いつ・何をしたか
+  CREATE TABLE IF NOT EXISTS users (
+    id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    username             TEXT NOT NULL UNIQUE,
+    password_hash        TEXT NOT NULL,
+    display_name         TEXT NOT NULL,
+    role                 TEXT NOT NULL DEFAULT 'staff',   -- admin（総務） / staff（一般社員）
+    is_active            INTEGER NOT NULL DEFAULT 1,
+    must_change_password INTEGER NOT NULL DEFAULT 0,
+    failed_count         INTEGER NOT NULL DEFAULT 0,
+    locked_until         TEXT,
+    last_login_at        TEXT,
+    created_at           TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
+
+  CREATE TABLE IF NOT EXISTS audit_logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    actor      TEXT NOT NULL,
+    action     TEXT NOT NULL,
+    target     TEXT,
+    detail     TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+  );
 `);
 
 // ---------- サンプルデータ ----------
